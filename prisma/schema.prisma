@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  nameEn    String
+  nameId    String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  nameEn    String
+  nameId    String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  posts     PostTag[]
+}
+
+model Post {
+  id               String     @id @default(cuid())
+  titleEn          String
+  titleId          String
+  slug             String     @unique
+  excerptEn        String     @db.Text
+  excerptId        String     @db.Text
+  bodyEn           String     @db.Text
+  bodyId           String     @db.Text
+  seoTitleEn       String?
+  seoTitleId       String?
+  seoDescriptionEn String?    @db.Text
+  seoDescriptionId String?    @db.Text
+  featuredImageId  String?
+  featuredImage    Media?     @relation(fields: [featuredImageId], references: [id], onDelete: SetNull)
+  categoryId       String?
+  category         Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  readingTime      Int        @default(5)
+  featured         Boolean    @default(false)
+  status           PostStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  tags             PostTag[]
+
+  @@index([status, publishedAt])
+  @@index([featured, status])
+  @@index([categoryId])
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model Media {
+  id           String   @id @default(cuid())
+  url          String
+  pathname     String?
+  filename     String
+  altEn        String   @default("")
+  altId        String   @default("")
+  mimeType     String?
+  size         Int?
+  width        Int?
+  height       Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  posts        Post[]
+  heroSettings SiteSettings[] @relation("HeroImage")
+  aboutSettings SiteSettings[] @relation("AboutImage")
+}
+
+model SiteSettings {
+  id String @id @default("site")
+
+  // Brand
+  siteNameEn String @default("Author")
+  siteNameId String @default("Penulis")
+  authorName String @default("Author")
+
+  // Hero
+  heroEyebrowEn     String @default("Writer & Essayist")
+  heroEyebrowId     String @default("Penulis & Esais")
+  heroHeadlineEn    String @default("Stories for thoughtful readers")
+  heroHeadlineId    String @default("Cerita untuk pembaca yang berpikir")
+  heroDescriptionEn String @db.Text @default("Essays, notes, and reflections on culture, language, and the quiet details of everyday life.")
+  heroDescriptionId String @db.Text @default("Esai, catatan, dan refleksi tentang budaya, bahasa, dan detail tenang dalam kehidupan sehari-hari.")
+  heroCtaLabelEn    String @default("Read the writing")
+  heroCtaLabelId    String @default("Baca tulisan")
+  heroCtaHref       String @default("/writing")
+  heroImageId       String?
+  heroImage         Media? @relation("HeroImage", fields: [heroImageId], references: [id], onDelete: SetNull)
+
+  // Home about preview
+  homeAboutTitleEn       String @default("About the writer")
+  homeAboutTitleId       String @default("Tentang penulis")
+  homeAboutDescriptionEn String @db.Text @default("A writer focused on clarity, craft, and the long form.")
+  homeAboutDescriptionId String @db.Text @default("Seorang penulis yang berfokus pada kejelasan, kerajinan, dan bentuk panjang.")
+
+  // Newsletter
+  newsletterTitleEn       String @default("Notes in your inbox")
+  newsletterTitleId       String @default("Catatan di kotak masuk Anda")
+  newsletterDescriptionEn String @db.Text @default("Occasional essays and reading notes. No spam.")
+  newsletterDescriptionId String @db.Text @default("Esai dan catatan bacaan sesekali. Tanpa spam.")
+
+  // About page
+  aboutShortEn       String @db.Text @default("A writer working across essays, journalism, and personal narrative.")
+  aboutShortId       String @db.Text @default("Seorang penulis yang berkarya di esai, jurnalisme, dan narasi pribadi.")
+  aboutLongEn        String @db.Text @default("This space collects published work, drafts of thinking, and notes on craft.")
+  aboutLongId        String @db.Text @default("Ruang ini mengumpulkan karya terbit, draf pemikiran, dan catatan tentang kerajinan menulis.")
+  aboutPhilosophyEn  String @db.Text @default("Writing is a practice of attention—looking closely, then saying only what needs to be said.")
+  aboutPhilosophyId  String @db.Text @default("Menulis adalah praktik perhatian—melihat dengan cermat, lalu mengatakan hanya yang perlu dikatakan.")
+  aboutInterestsEn   String @db.Text @default("Literature, culture, language, cities, memory")
+  aboutInterestsId   String @db.Text @default("Sastra, budaya, bahasa, kota, memori")
+  aboutPublicationsEn String @db.Text @default("")
+  aboutPublicationsId String @db.Text @default("")
+  aboutImageId       String?
+  aboutImage         Media? @relation("AboutImage", fields: [aboutImageId], references: [id], onDelete: SetNull)
+
+  // Contact
+  contactEmail            String @default("")
+  contactIntroEn          String @db.Text @default("For commissions, collaborations, or speaking inquiries, send a note.")
+  contactIntroId          String @db.Text @default("Untuk komisi, kolaborasi, atau undangan berbicara, kirimkan catatan.")
+  contactSuccessEn        String @default("Thank you. Your message has been received.")
+  contactSuccessId        String @default("Terima kasih. Pesan Anda telah diterima.")
+
+  // Social
+  socialTwitter   String @default("")
+  socialInstagram String @default("")
+  socialLinkedin  String @default("")
+  socialGithub    String @default("")
+  socialWebsite   String @default("")
+
+  // SEO defaults
+  defaultSeoTitleEn       String @default("")
+  defaultSeoTitleId       String @default("")
+  defaultSeoDescriptionEn String @db.Text @default("")
+  defaultSeoDescriptionId String @db.Text @default("")
+
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  locale       String   @default("en")
+  createdAt    DateTime @default(now())
+  unsubscribed Boolean  @default(false)
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  ip        String
+  email     String
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([ip, createdAt])
+  @@index([email, createdAt])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String?
+  entityId  String?
+  meta      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

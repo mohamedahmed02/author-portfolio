@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "siteDescription": "Essays, articles, and notes by a professional writer."
+  },
+  "nav": {
+    "home": "Home",
+    "writing": "Writing",
+    "about": "About",
+    "contact": "Contact",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
+  },
+  "home": {
+    "featured": "Featured writing",
+    "featuredIntro": "Selected essays and articles.",
+    "viewAll": "View all writing",
+    "readArticle": "Read article",
+    "aboutCta": "About the writer"
+  },
+  "writing": {
+    "title": "Writing",
+    "intro": "An archive of essays, articles, notes, and other published work.",
+    "search": "Search writing",
+    "searchPlaceholder": "Search by title or excerpt…",
+    "allCategories": "All",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
+    "empty": "No published writing yet.",
+    "noResults": "No writing matches your filters.",
+    "loadMore": "Load more",
+    "minRead": "{minutes} min read",
+    "featured": "Featured"
+  },
+  "article": {
+    "by": "By",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "previous": "Previous",
+    "next": "Next",
+    "related": "Related writing",
+    "backToWriting": "Back to writing"
+  },
+  "about": {
+    "title": "About",
+    "philosophy": "Writing philosophy",
+    "interests": "Areas of interest",
+    "publications": "Selected publications",
+    "connect": "Connect"
+  },
+  "contact": {
+    "title": "Contact",
+    "name": "Name",
+    "email": "Email",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending…",
+    "error": "Something went wrong. Please try again.",
+    "honeypot": "Leave this field empty",
+    "validation": {
+      "name": "Please enter your name.",
+      "email": "Please enter a valid email.",
+      "subject": "Please enter a subject.",
+      "message": "Please enter a message."
+    }
+  },
+  "newsletter": {
+    "email": "Email address",
+    "subscribe": "Subscribe",
+    "subscribing": "Subscribing…",
+    "success": "You are subscribed. Thank you.",
+    "error": "Unable to subscribe right now.",
+    "invalid": "Please enter a valid email."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "writing": "Writing",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "errors": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you are looking for does not exist or has been moved.",
+    "serverTitle": "Something went wrong",
+    "serverBody": "An unexpected error occurred. Please try again later.",
+    "goHome": "Go home"
+  }
+}

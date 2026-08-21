@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "siteDescription": "Esai, artikel, dan catatan oleh seorang penulis profesional."
+  },
+  "nav": {
+    "home": "Beranda",
+    "writing": "Tulisan",
+    "about": "Tentang",
+    "contact": "Kontak",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "themeLight": "Terang",
+    "themeDark": "Gelap",
+    "themeSystem": "Sistem"
+  },
+  "home": {
+    "featured": "Tulisan unggulan",
+    "featuredIntro": "Esai dan artikel pilihan.",
+    "viewAll": "Lihat semua tulisan",
+    "readArticle": "Baca artikel",
+    "aboutCta": "Tentang penulis"
+  },
+  "writing": {
+    "title": "Tulisan",
+    "intro": "Arsip esai, artikel, catatan, dan karya terbit lainnya.",
+    "search": "Cari tulisan",
+    "searchPlaceholder": "Cari berdasarkan judul atau kutipan…",
+    "allCategories": "Semua",
+    "sortNewest": "Terbaru",
+    "sortOldest": "Terlama",
+    "empty": "Belum ada tulisan yang dipublikasikan.",
+    "noResults": "Tidak ada tulisan yang cocok dengan filter Anda.",
+    "loadMore": "Muat lebih banyak",
+    "minRead": "{minutes} mnt baca",
+    "featured": "Unggulan"
+  },
+  "article": {
+    "by": "Oleh",
+    "share": "Bagikan",
+    "copyLink": "Salin tautan",
+    "copied": "Disalin",
+    "previous": "Sebelumnya",
+    "next": "Berikutnya",
+    "related": "Tulisan terkait",
+    "backToWriting": "Kembali ke tulisan"
+  },
+  "about": {
+    "title": "Tentang",
+    "philosophy": "Filosofi menulis",
+    "interests": "Bidang minat",
+    "publications": "Publikasi pilihan",
+    "connect": "Terhubung"
+  },
+  "contact": {
+    "title": "Kontak",
+    "name": "Nama",
+    "email": "Email",
+    "subject": "Subjek",
+    "message": "Pesan",
+    "send": "Kirim pesan",
+    "sending": "Mengirim…",
+    "error": "Terjadi kesalahan. Silakan coba lagi.",
+    "honeypot": "Biarkan kolom ini kosong",
+    "validation": {
+      "name": "Silakan masukkan nama Anda.",
+      "email": "Silakan masukkan email yang valid.",
+      "subject": "Silakan masukkan subjek.",
+      "message": "Silakan masukkan pesan."
+    }
+  },
+  "newsletter": {
+    "email": "Alamat email",
+    "subscribe": "Berlangganan",
+    "subscribing": "Berlangganan…",
+    "success": "Anda telah berlangganan. Terima kasih.",
+    "error": "Tidak dapat berlangganan saat ini.",
+    "invalid": "Silakan masukkan email yang valid."
+  },
+  "footer": {
+    "rights": "Hak cipta dilindungi.",
+    "writing": "Tulisan",
+    "about": "Tentang",
+    "contact": "Kontak"
+  },
+  "errors": {
+    "notFoundTitle": "Halaman tidak ditemukan",
+    "notFoundBody": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
+    "serverTitle": "Terjadi kesalahan",
+    "serverBody": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi nanti.",
+    "goHome": "Ke beranda"
+  }
+}
