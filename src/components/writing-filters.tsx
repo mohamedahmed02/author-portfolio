@@ -5,6 +5,7 @@ import { FormEvent, useTransition } from "react";
 import type { Locale } from "@/lib/i18n";
 import type { Dictionary } from "@/lib/dictionary";
 import { cn } from "@/lib/utils";
+import { Search, ArrowDownUp } from "lucide-react";
 
 export function WritingFilters({
   locale,
@@ -22,13 +23,17 @@ export function WritingFilters({
 
   function push(next: { q?: string; category?: string; sort?: string }) {
     const params = new URLSearchParams();
+
     const q = next.q ?? current.q;
     const category = next.category ?? current.category;
     const sort = next.sort ?? current.sort;
+
     if (q) params.set("q", q);
     if (category) params.set("category", category);
     if (sort && sort !== "newest") params.set("sort", sort);
+
     const qs = params.toString();
+
     startTransition(() => {
       router.push(`/${locale}/writing${qs ? `?${qs}` : ""}`);
     });
@@ -36,79 +41,117 @@ export function WritingFilters({
 
   function onSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     const data = new FormData(e.currentTarget);
-    push({ q: String(data.get("q") || "") });
+
+    push({
+      q: String(data.get("q") || ""),
+    });
   }
 
   return (
-    <div className={cn("mt-10 space-y-5", pending && "opacity-70")}>
-      <form onSubmit={onSearch} className="flex flex-col gap-3 sm:flex-row">
-        <label className="sr-only" htmlFor="writing-search">
-          {dict.writing.search}
-        </label>
-        <input
-          id="writing-search"
-          name="q"
-          defaultValue={current.q}
-          placeholder={dict.writing.searchPlaceholder}
-          className="w-full border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-4 py-3 text-sm outline-none focus:border-[var(--accent)] sm:max-w-md"
-        />
-        <button
-          type="submit"
-          className="inline-flex h-11 items-center justify-center border border-[var(--border-strong)] px-4 text-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+    <div
+      className={cn(
+        "mt-12 space-y-6 transition-opacity duration-200",
+        pending && "opacity-60",
+      )}
+    >
+      {/* Search + sorting */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <form
+          onSubmit={onSearch}
+          className="flex w-full max-w-xl items-center"
         >
-          {dict.writing.search}
-        </button>
-        <div className="flex gap-2 sm:ml-auto">
+          <label className="sr-only" htmlFor="writing-search">
+            {dict.writing.search}
+          </label>
+
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--fg-subtle)]" />
+
+            <input
+              id="writing-search"
+              name="q"
+              defaultValue={current.q}
+              placeholder={dict.writing.searchPlaceholder}
+              className="h-12 w-full rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] pl-11 pr-4 text-sm text-[var(--fg)] outline-none transition-all placeholder:text-[var(--fg-subtle)] hover:border-[var(--border-strong)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent-soft)]"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="ml-2 inline-flex h-12 items-center justify-center rounded-full bg-[var(--fg)] px-5 text-sm font-medium text-[var(--bg)] transition-all hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:text-[var(--accent-fg)]"
+          >
+            {dict.writing.search}
+          </button>
+        </form>
+
+        {/* Sort */}
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
+          <span className="flex items-center gap-1.5 px-3 text-[var(--fg-subtle)]">
+            <ArrowDownUp className="h-3.5 w-3.5" />
+          </span>
+
           <button
             type="button"
             onClick={() => push({ sort: "newest" })}
             className={cn(
-              "h-11 px-3 text-sm",
-              current.sort === "newest" ? "text-[var(--accent)]" : "text-[var(--fg-muted)]",
+              "rounded-full px-4 py-2 text-xs font-medium transition",
+              current.sort === "newest"
+                ? "bg-[var(--fg)] text-[var(--bg)]"
+                : "text-[var(--fg-muted)] hover:text-[var(--fg)]",
             )}
           >
             {dict.writing.sortNewest}
           </button>
+
           <button
             type="button"
             onClick={() => push({ sort: "oldest" })}
             className={cn(
-              "h-11 px-3 text-sm",
-              current.sort === "oldest" ? "text-[var(--accent)]" : "text-[var(--fg-muted)]",
+              "rounded-full px-4 py-2 text-xs font-medium transition",
+              current.sort === "oldest"
+                ? "bg-[var(--fg)] text-[var(--bg)]"
+                : "text-[var(--fg-muted)] hover:text-[var(--fg)]",
             )}
           >
             {dict.writing.sortOldest}
           </button>
         </div>
-      </form>
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      {/* Categories */}
+      <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => push({ category: "" })}
           className={cn(
-            "border px-3 py-1.5 text-xs uppercase tracking-[0.12em] transition",
+            "rounded-full border px-4 py-2 text-xs font-medium transition-all",
             !current.category
-              ? "border-[var(--accent)] text-[var(--accent)]"
-              : "border-[var(--border)] text-[var(--fg-muted)] hover:border-[var(--border-strong)]",
+              ? "border-[var(--fg)] bg-[var(--fg)] text-[var(--bg)]"
+              : "border-[var(--border)] text-[var(--fg-muted)] hover:border-[var(--border-strong)] hover:text-[var(--fg)]",
           )}
         >
           {dict.writing.allCategories}
         </button>
+
         {categories.map((cat) => (
           <button
             key={cat.slug}
             type="button"
             onClick={() => push({ category: cat.slug })}
             className={cn(
-              "border px-3 py-1.5 text-xs uppercase tracking-[0.12em] transition",
+              "rounded-full border px-4 py-2 text-xs font-medium transition-all",
               current.category === cat.slug
-                ? "border-[var(--accent)] text-[var(--accent)]"
-                : "border-[var(--border)] text-[var(--fg-muted)] hover:border-[var(--border-strong)]",
+                ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)]"
+                : "border-[var(--border)] text-[var(--fg-muted)] hover:border-[var(--border-strong)] hover:text-[var(--fg)]",
             )}
           >
             {cat.name}
+
+            <span className="ml-1.5 opacity-50">
+              {cat.count}
+            </span>
           </button>
         ))}
       </div>

@@ -13,12 +13,13 @@ export function LanguageSwitcher({
   className?: string;
 }) {
   const pathname = usePathname();
+
   const rest = pathname.replace(/^\/(en|id)/, "") || "";
 
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-0.5 text-xs font-medium tracking-wide",
+        "inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.14em]",
         className,
       )}
       role="group"
@@ -26,20 +27,25 @@ export function LanguageSwitcher({
     >
       {(["en", "id"] as const).map((l) => {
         const active = locale === l;
+
         return (
           <Link
             key={l}
             href={`/${l}${rest}`}
-            className={cn(
-              "rounded-full px-2.5 py-1.5 uppercase transition-colors",
-              active
-                ? "bg-[var(--accent-soft)] text-[var(--accent)]"
-                : "text-[var(--fg-muted)] hover:text-[var(--fg)]",
-            )}
             hrefLang={l}
-            aria-current={active ? "true" : undefined}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "relative px-2 py-1 transition-colors duration-200",
+              active
+                ? "text-[var(--fg)]"
+                : "text-[var(--fg-subtle)] hover:text-[var(--fg)]",
+            )}
           >
             {l}
+
+            {active ? (
+              <span className="absolute inset-x-2 -bottom-0.5 h-px bg-[var(--accent)]" />
+            ) : null}
           </Link>
         );
       })}

@@ -1,35 +1,48 @@
 "use client";
 
 import { useActionState } from "react";
-import { changePassword, type SettingsActionState } from "@/app/admin/actions/settings";
+import {
+  changePassword,
+  type SettingsActionState,
+} from "@/app/admin/actions/settings";
 
 const fieldClass =
-  "mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500";
-const labelClass = "block text-sm font-medium text-zinc-700";
+  "mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--fg)] shadow-sm placeholder:text-[var(--fg-subtle)] transition-colors focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)]";
+
+const labelClass =
+  "block text-sm font-medium text-[var(--fg)]";
 
 export function ChangePasswordForm() {
-  const [state, formAction, pending] = useActionState<SettingsActionState, FormData>(
-    changePassword,
-    {},
-  );
+  const [state, formAction, pending] = useActionState<
+    SettingsActionState,
+    FormData
+  >(changePassword, {});
 
   return (
-    <form action={formAction} className="max-w-md space-y-4">
+    <form action={formAction} className="max-w-md space-y-5">
+      {/* Error */}
       {state?.error ? (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3.5 py-3 text-sm text-[var(--danger)]">
           {state.error}
-        </p>
-      ) : null}
-      {state?.success ? (
-        <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
-          {state.success}
-        </p>
+        </div>
       ) : null}
 
+      {/* Success */}
+      {state?.success ? (
+        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-3 text-sm text-[var(--success)]">
+          {state.success}
+        </div>
+      ) : null}
+
+      {/* Current Password */}
       <div>
-        <label className={labelClass} htmlFor="currentPassword">
+        <label
+          className={labelClass}
+          htmlFor="currentPassword"
+        >
           Current password
         </label>
+
         <input
           id="currentPassword"
           name="currentPassword"
@@ -39,10 +52,16 @@ export function ChangePasswordForm() {
           className={fieldClass}
         />
       </div>
+
+      {/* New Password */}
       <div>
-        <label className={labelClass} htmlFor="newPassword">
+        <label
+          className={labelClass}
+          htmlFor="newPassword"
+        >
           New password
         </label>
+
         <input
           id="newPassword"
           name="newPassword"
@@ -52,12 +71,21 @@ export function ChangePasswordForm() {
           autoComplete="new-password"
           className={fieldClass}
         />
-        <p className="mt-1 text-xs text-zinc-500">At least 12 characters.</p>
+
+        <p className="mt-1.5 text-xs text-[var(--fg-muted)]">
+          At least 12 characters.
+        </p>
       </div>
+
+      {/* Confirm Password */}
       <div>
-        <label className={labelClass} htmlFor="confirmPassword">
+        <label
+          className={labelClass}
+          htmlFor="confirmPassword"
+        >
           Confirm new password
         </label>
+
         <input
           id="confirmPassword"
           name="confirmPassword"
@@ -69,10 +97,11 @@ export function ChangePasswordForm() {
         />
       </div>
 
+      {/* Submit */}
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-60"
+        className="rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-fg)] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-md active:translate-y-0 disabled:pointer-events-none disabled:opacity-50"
       >
         {pending ? "Updating…" : "Update password"}
       </button>

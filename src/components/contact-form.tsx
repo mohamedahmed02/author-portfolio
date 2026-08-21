@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import type { Locale } from "@/lib/i18n";
 import type { Dictionary } from "@/lib/dictionary";
+import { ArrowUpRight, Check } from "lucide-react";
 
 export function ContactForm({
   locale,
@@ -13,17 +14,22 @@ export function ContactForm({
   dict: Dictionary;
   successMessage: string;
 }) {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     setStatus("loading");
     setErrors({});
     setFormError("");
 
     const form = new FormData(e.currentTarget);
+
     const payload = {
       name: String(form.get("name") || ""),
       email: String(form.get("email") || ""),
@@ -34,12 +40,22 @@ export function ContactForm({
     };
 
     const nextErrors: Record<string, string> = {};
-    if (!payload.name.trim()) nextErrors.name = dict.contact.validation.name;
+
+    if (!payload.name.trim()) {
+      nextErrors.name = dict.contact.validation.name;
+    }
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
       nextErrors.email = dict.contact.validation.email;
     }
-    if (!payload.subject.trim()) nextErrors.subject = dict.contact.validation.subject;
-    if (!payload.message.trim()) nextErrors.message = dict.contact.validation.message;
+
+    if (!payload.subject.trim()) {
+      nextErrors.subject = dict.contact.validation.subject;
+    }
+
+    if (!payload.message.trim()) {
+      nextErrors.message = dict.contact.validation.message;
+    }
 
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
@@ -50,14 +66,18 @@ export function ContactForm({
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
+
       if (!res.ok) {
         setStatus("error");
         setFormError(dict.contact.error);
         return;
       }
+
       setStatus("success");
       e.currentTarget.reset();
     } catch {
@@ -69,21 +89,40 @@ export function ContactForm({
   if (status === "success") {
     return (
       <div
-        className="border border-[var(--border)] bg-[var(--bg-elevated)] p-8 text-[var(--fg)]"
+        className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--bg-elevated)] p-8 md:p-10"
         role="status"
       >
-        <p className="font-serif text-2xl tracking-tight">{successMessage}</p>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+          <Check className="h-5 w-5" />
+        </div>
+
+        <p className="mt-6 max-w-lg font-serif text-3xl leading-tight tracking-[-0.025em]">
+          {successMessage}
+        </p>
+
+        <p className="mt-3 text-sm leading-6 text-[var(--fg-muted)]">
+          {locale === "en"
+            ? "Your message has been sent successfully."
+            : "Your message has been sent successfully."}
+        </p>
       </div>
     );
   }
 
   const fieldClass =
-    "w-full border border-[var(--border-strong)] bg-[var(--bg)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]";
+    "w-full rounded-xl border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-4 py-3 text-sm text-[var(--fg)] outline-none transition-all duration-200 placeholder:text-[var(--fg-subtle)] hover:border-[var(--fg-muted)] focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent-soft)]";
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <div className="grid gap-5 md:grid-cols-2">
-        <Field label={dict.contact.name} name="name" error={errors.name} className={fieldClass} />
+    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Field
+          label={dict.contact.name}
+          name="name"
+          error={errors.name}
+          className={fieldClass}
+          autoComplete="name"
+        />
+
         <Field
           label={dict.contact.email}
           name="email"
@@ -93,27 +132,38 @@ export function ContactForm({
           autoComplete="email"
         />
       </div>
+
       <Field
         label={dict.contact.subject}
         name="subject"
         error={errors.subject}
         className={fieldClass}
       />
+
       <div>
-        <label htmlFor="message" className="mb-2 block text-sm text-[var(--fg-muted)]">
+        <label
+          htmlFor="message"
+          className="mb-2 block text-sm font-medium text-[var(--fg)]"
+        >
           {dict.contact.message}
         </label>
+
         <textarea
           id="message"
           name="message"
           rows={7}
-          className={fieldClass}
+          className={`${fieldClass} resize-y`}
           aria-invalid={!!errors.message}
         />
+
         {errors.message ? (
-          <p className="mt-1.5 text-sm text-[var(--danger)]">{errors.message}</p>
+          <p className="mt-2 text-sm text-[var(--danger)]">
+            {errors.message}
+          </p>
         ) : null}
       </div>
+
+      {/* Honeypot */}
       <input
         type="text"
         name="website"
@@ -122,18 +172,30 @@ export function ContactForm({
         className="hidden"
         aria-hidden
       />
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="inline-flex h-11 items-center justify-center bg-[var(--fg)] px-6 text-sm text-[var(--bg)] transition hover:bg-[var(--accent)] hover:text-[var(--accent-fg)] disabled:opacity-60"
-      >
-        {status === "loading" ? dict.contact.sending : dict.contact.send}
-      </button>
-      {formError ? (
-        <p className="text-sm text-[var(--danger)]" role="alert">
-          {formError}
-        </p>
-      ) : null}
+
+      <div className="flex flex-col items-start gap-4">
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="group inline-flex h-12 items-center justify-center gap-3 rounded-full bg-[var(--fg)] px-6 text-sm font-medium text-[var(--bg)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--accent)] hover:text-[var(--accent-fg)] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <span>
+            {status === "loading"
+              ? dict.contact.sending
+              : dict.contact.send}
+          </span>
+
+          {status !== "loading" ? (
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          ) : null}
+        </button>
+
+        {formError ? (
+          <p className="text-sm text-[var(--danger)]" role="alert">
+            {formError}
+          </p>
+        ) : null}
+      </div>
     </form>
   );
 }
@@ -155,9 +217,13 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={name} className="mb-2 block text-sm text-[var(--fg-muted)]">
+      <label
+        htmlFor={name}
+        className="mb-2 block text-sm font-medium text-[var(--fg)]"
+      >
         {label}
       </label>
+
       <input
         id={name}
         name={name}
@@ -166,7 +232,12 @@ function Field({
         autoComplete={autoComplete}
         aria-invalid={!!error}
       />
-      {error ? <p className="mt-1.5 text-sm text-[var(--danger)]">{error}</p> : null}
+
+      {error ? (
+        <p className="mt-2 text-sm text-[var(--danger)]">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -21,15 +21,14 @@ export function SiteHeader({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [menuPath, setMenuPath] = useState(pathname);
 
-  if (menuPath !== pathname) {
-    setMenuPath(pathname);
-    if (open) setOpen(false);
-  }
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -43,89 +42,144 @@ export function SiteHeader({
   ];
 
   const isActive = (href: string) => {
-    if (href === `/${locale}`) return pathname === href;
+    if (href === `/${locale}`) {
+      return pathname === href;
+    }
+
     return pathname.startsWith(href);
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-md">
-      <div className="container-page flex h-16 items-center justify-between gap-4 md:h-[4.25rem]">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-xl">
+      <div className="container-page flex h-[4.5rem] items-center justify-between">
+        {/* Logo */}
         <Link
           href={`/${locale}`}
-          className="font-serif text-xl tracking-tight text-[var(--fg)] md:text-[1.35rem]"
+          className="group flex items-center gap-3"
+          aria-label={siteName}
         >
-          {siteName}
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--fg)] text-xs font-semibold text-[var(--bg)] transition-transform duration-300 group-hover:rotate-[-8deg]">
+            {siteName.charAt(0).toUpperCase()}
+          </span>
+
+          <span className="font-serif text-xl tracking-tight text-[var(--fg)] md:text-[1.4rem]">
+            {siteName}
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Main">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm tracking-wide transition-colors",
-                isActive(link.href)
-                  ? "text-[var(--accent)]"
-                  : "text-[var(--fg-muted)] hover:text-[var(--fg)]",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Desktop Navigation */}
+        <nav
+          className="hidden items-center gap-1 md:flex"
+          aria-label="Main navigation"
+        >
+          {links.map((link) => {
+            const active = isActive(link.href);
+
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "relative rounded-full px-4 py-2 text-sm transition-all duration-200",
+                  active
+                    ? "bg-[var(--fg)] text-[var(--bg)]"
+                    : "text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--fg)]",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <LanguageSwitcher locale={locale} />
-          <ThemeSwitcher
-            labels={{
-              theme: dict.nav.theme,
-              themeLight: dict.nav.themeLight,
-              themeDark: dict.nav.themeDark,
-              themeSystem: dict.nav.themeSystem,
-            }}
-          />
+        {/* Desktop Controls */}
+        <div className="hidden items-center gap-2 md:flex">
+          <div className="flex items-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
+            <LanguageSwitcher locale={locale} />
+          </div>
+
+          <div className="flex items-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
+            <ThemeSwitcher
+              labels={{
+                theme: dict.nav.theme,
+                themeLight: dict.nav.themeLight,
+                themeDark: dict.nav.themeDark,
+                themeSystem: dict.nav.themeSystem,
+              }}
+            />
+          </div>
         </div>
 
+        {/* Mobile Button */}
         <button
           type="button"
-          className="inline-flex h-10 w-10 items-center justify-center border border-[var(--border)] md:hidden"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((value) => !value)}
           aria-expanded={open}
           aria-controls="mobile-nav"
           aria-label={open ? dict.nav.closeMenu : dict.nav.openMenu}
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 md:hidden",
+            open
+              ? "border-[var(--fg)] bg-[var(--fg)] text-[var(--bg)]"
+              : "border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--fg)] hover:border-[var(--border-strong)]",
+          )}
         >
-          {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          {open ? (
+            <X className="h-4 w-4" />
+          ) : (
+            <Menu className="h-4 w-4" />
+          )}
         </button>
       </div>
 
+      {/* Mobile Navigation */}
       {open ? (
         <div
           id="mobile-nav"
           className="border-t border-[var(--border)] bg-[var(--bg)] md:hidden"
         >
-          <nav className="container-page flex flex-col gap-1 py-4" aria-label="Mobile">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-1 py-3 text-base",
-                  isActive(link.href) ? "text-[var(--accent)]" : "text-[var(--fg)]",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-4">
-              <LanguageSwitcher locale={locale} />
-              <ThemeSwitcher
-                labels={{
-                  theme: dict.nav.theme,
-                  themeLight: dict.nav.themeLight,
-                  themeDark: dict.nav.themeDark,
-                  themeSystem: dict.nav.themeSystem,
-                }}
-              />
+          <nav
+            className="container-page flex flex-col gap-2 py-5"
+            aria-label="Mobile navigation"
+          >
+            {links.map((link) => {
+              const active = isActive(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center justify-between rounded-xl px-4 py-3.5 text-base transition-colors",
+                    active
+                      ? "bg-[var(--fg)] text-[var(--bg)]"
+                      : "text-[var(--fg-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--fg)]",
+                  )}
+                >
+                  <span>{link.label}</span>
+
+                  {active ? (
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                  ) : null}
+                </Link>
+              );
+            })}
+
+            <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-5">
+              <div className="flex items-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
+                <LanguageSwitcher locale={locale} />
+              </div>
+
+              <div className="flex items-center rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] p-1">
+                <ThemeSwitcher
+                  labels={{
+                    theme: dict.nav.theme,
+                    themeLight: dict.nav.themeLight,
+                    themeDark: dict.nav.themeDark,
+                    themeSystem: dict.nav.themeSystem,
+                  }}
+                />
+              </div>
             </div>
           </nav>
         </div>
